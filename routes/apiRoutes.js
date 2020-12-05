@@ -2,6 +2,7 @@ const { json } = require("express");
 const fs = require("fs");
 const uuid = require("uuid");
 const path = require("path");
+const { report } = require("process");
 
 
 
@@ -16,20 +17,34 @@ app.get("/api/notes", function(req, res){
 });
 
 app.post("/api/notes", function(req, res){
-
-    res.json(fs.readFile('../../../db/db.json', (err, data) => {
-        if (err) throw err;
-        let savedNotes = JSON.parse(data);
-        newEntry = req.body
+    let savedNotes = JSON.parse(fs.readFileSync('../../../db/db.json'));
+    newEntry = req.body
         newEntry.id = uuid.v4();
         savedNotes.push(newEntry)
-    fs.writeFile("../../../db/db.json", JSON.stringify(savedNotes), (err) => {
-        if (err) throw err;
-        console.log('Data written to file');
-        
-    })
-}));
+        fs.writeFileSync("../../../db/db.json", JSON.stringify(savedNotes))
+    res.json(savedNotes)
     
-    });
-    
+});
+
+app.delete("/api/notes/:id", function(req, res){
+    let savedNotes = JSON.parse(fs.readFileSync('../../../db/db.json'));
+    let updatedNotes = savedNotes.filter((data) => data.id !== req.params.id)
+    fs.writeFileSync("../../../db/db.json", JSON.stringify(updatedNotes))
+    res.json(updatedNotes)
+});
+
 };
+
+
+//     res.json(fs.readFile('../../../db/db.json', (err, data) => {
+//         if (err) throw err;
+//         let savedNotes = JSON.parse(data);
+//         newEntry = req.body
+//         newEntry.id = uuid.v4();
+//         savedNotes.push(newEntry)
+//     fs.writeFile("../../../db/db.json", JSON.stringify(savedNotes), (err) => {
+//         if (err) throw err;
+//         console.log('Data written to file');
+        
+//     })
+// }));
