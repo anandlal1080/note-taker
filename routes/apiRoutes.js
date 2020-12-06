@@ -2,12 +2,12 @@ const { json } = require("express");
 const fs = require("fs");
 const uuid = require("uuid");
 const path = require("path");
-const { report } = require("process");
+
 
 
 
 module.exports = function (app) {
-
+//This API would send the db.json file when the GET request is sent from the notes.html
 app.get("/api/notes", function(req, res){
    res.sendFile(path.join(__dirname, "../db/db.json"), (err, data) => {
     if (err) throw err;
@@ -15,7 +15,7 @@ app.get("/api/notes", function(req, res){
     
 })
 });
-
+// This API would take data from the notes.html and add to the db.json file
 app.post("/api/notes", function(req, res){
     let savedNotes = JSON.parse(fs.readFileSync('./db/db.json'));
     newEntry = req.body
@@ -25,7 +25,7 @@ app.post("/api/notes", function(req, res){
     res.json(savedNotes)
     
 });
-
+// This API would handle the deleting of entries from the notes.html
 app.delete("/api/notes/:id", function(req, res){
     let savedNotes = JSON.parse(fs.readFileSync('./db/db.json'));
     let updatedNotes = savedNotes.filter((data) => data.id !== req.params.id)
